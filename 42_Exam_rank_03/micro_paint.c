@@ -27,34 +27,33 @@ static int     msg_error(const char *msg, int ret)
 static int check_zone(FILE *file)
 {
     int     get;
-    t_bg    *zone;
+    t_bg    zone;
 
     get = 0;
-    memset(zone, 0, sizeof(t_bg));
-    if ((get = fscanf(file, "%d %d %c\n", zone->width, zone->height, zone->c) == 3))
+    if ((get = fscanf(file, "%d %d %c\n", &zone.width, &zone.height, &zone.c) == 3))
     {
-        if (!(zone->width > 0 && zone->width <= 300) || !(zone->height > 0 && zone->height <= 300))
+        if (!(zone.width > 0 && zone.width <= 300) || !(zone.height > 0 && zone.height <= 300))
             return (0);
-        if (zone->c <= 0)
+        if (zone.c <= 0)
             return (0);
+        printf("%d\n", get);
         return (1);
     }
-    fclose(file);
     return (0);
 }
 
-static int check_draw(FILE *file)
-{
-    int     get;
-    t_draw  *draw;
+// static int check_draw(FILE *file)
+// {
+//     int     get;
+//     t_draw  *draw;
 
-    get = 0;
-    memset(draw, 0, sizeof(t_draw));
-    // while ()
-    // {
+//     get = 0;
+//     memset(draw, 0, sizeof(t_draw));
+//     // while ()
+//     // {
         
-    // }
-}
+//     // }
+// }
 
 int main(int ac, char **av)
 {
@@ -64,7 +63,8 @@ int main(int ac, char **av)
         return(msg_error("Error: argument" ,1));
     if (!(file = fopen(av[1], "r")))
         return(msg_error("Error: Operation file corrupted" ,1));
-    if (!(check_zone))
+    if (!(check_zone(file)))
         return(msg_error("Error: Operation file corrupted" ,1));
+    fclose(file);
     return (0);
 }
