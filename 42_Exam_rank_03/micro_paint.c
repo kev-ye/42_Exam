@@ -43,9 +43,38 @@ static int  check_zone(FILE *file, t_bg *paper, char **draw)
     return (1);
 }
 
-// static int  check_rect()
-// {
-// }
+static int  creat_rect(float x, float y, t_draw *rect)
+{
+    if (x < rect->x || y < rect->y || x > rect->x + rect->width || y > rect->y + rect->height)
+        return (0);
+    return (1);
+}
+
+static void  draw_rect(t_bg *paper, char **draw, t_draw *rect)
+{
+    int i;
+    int j;
+
+    if (rect->c == 'R')
+    {
+        i = 0;
+        while (i < paper->height)
+        {
+            j = 0;
+            while (j < paper->width)
+            {
+                if (creat_rect((float)j, (float)i, rect))
+                    (*draw)[i * paper->width + j] = rect->cc;
+                ++j;
+            }
+            ++i;
+        }
+    }
+    // else
+    // {
+
+    // }
+}
 
 static int  check_rect(FILE *file, t_bg *paper, char **draw)
 {
@@ -57,6 +86,7 @@ static int  check_rect(FILE *file, t_bg *paper, char **draw)
     {
         if (!(rect.width > 0. && rect.height > 0. && (rect.c == 'r' || rect.c == 'R')))
             return (0);
+        draw_rect(paper, draw, &rect);
     }
     if (get != -1)
         return (0);
@@ -69,11 +99,11 @@ static void paint_all(char *draw, t_bg paper)
     int j;
 
     i = 0;
-    while (i < paper.width)
+    while (i < paper.height)
     {
         j = 0;
-        while (j < paper.height)
-            printf("%c", draw[j++]);
+        while (j < paper.width)
+            printf("%c", draw[i * paper.width + j++]);
         printf("\n");
         ++i;
     }
@@ -101,7 +131,7 @@ int main(int ac, char **av)
         fclose(file);
         return(msg_error("Error: Operation file corrupted rect" ,1));
     }
-    //paint_all(draw, paper);
+    paint_all(draw, paper);
     fclose(file);
     return (0);
 }
