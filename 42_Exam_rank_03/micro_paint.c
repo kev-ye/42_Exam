@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 typedef struct  s_bg
 {
@@ -24,45 +25,58 @@ static int     msg_error(const char *msg, int ret)
     return (ret);
 }
 
-static int check_zone(FILE *file)
+static int  check_zone(FILE *file, t_bg *paper, char **draw)
 {
     int     get;
-    t_bg    zone;
 
     get = 0;
-    memset(&zone, 0, sizeof(t_bg));
-    if ((get = fscanf(file, "%d %d %c\n", &zone.width, &zone.height, &zone.c)) != 3)
+    if ((get = fscanf(file, "%d %d %c\n", &paper->width, &paper->height, &paper->c)) != 3)
         return (0);
-    if (!(zone.width > 0 && zone.width <= 300) || !(zone.height > 0 && zone.height <= 300))
+    if (!(paper->width > 0 && paper->width <= 300) || !(paper->height > 0 && paper->height <= 300))
         return (0);
     if (get == -1)
         return (0);
+    *draw = calloc(paper->width * paper->height, sizeof(char));
+    if (!*draw)
+        return (0);
+    memset(*draw, paper->c, paper->width * paper->height);
     return (1);
 }
 
-static int check_draw(FILE *file)
+static void paint_all(char *draw, t_bg paper)
 {
-    int     get;
-    t_draw  draw;
+    int i;
+    int j;
 
-    get = 0;
-    memset(&draw, 0, sizeof(t_draw));
-    while (get = fscanf(file, "%c %f %f %f %f %c\n", &draw.c, &draw.x, &draw.y, &draw.width, &draw.height, &draw.cc)) == 6)
+    i = 0;
+    while (i < paper.width)
     {
-       
+        j = 0;
+        while (j < paper.height)
+            printf("%c", draw[j++]);
+        printf("\n");
+        ++i;
     }
+    if (draw)
+        free(draw); 
 }
 
 int main(int ac, char **av)
 {
-    FILE *file;
+    FILE    *file;
+    t_bg    paper;
+    char    *draw;
 
     if (ac != 2)
         return(msg_error("Error: argument" ,1));
     if (!(file = fopen(av[1], "r")))
         return(msg_error("Error: Operation file corrupted" ,1));
-    if (!(check_zone(file)))
-        return(msg_error("Error: Operation file corrupted" ,1));
+    if (!(check_zone(file, &paper, &draw)))
+    {
+        fclose(file);
+        return(msg_error("Error: Operation file corrupted zone" ,1));
+    }
+    paint_all(draw, paper);
     fclose(file);
     return (0);
 }
