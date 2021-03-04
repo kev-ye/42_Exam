@@ -47,6 +47,8 @@ static int  creat_rect(float x, float y, t_draw *rect)
 {
     if (x < rect->x || y < rect->y || x > rect->x + rect->width || y > rect->y + rect->height)
         return (0);
+    if ((x - rect->x < 1. || y - rect->y < 1.) || (1. > rect->x + rect->width - x || 1. > rect->y + rect->height - y))
+        return (2);
     return (1);
 }
 
@@ -70,10 +72,21 @@ static void  draw_rect(t_bg *paper, char **draw, t_draw *rect)
             ++i;
         }
     }
-    // else
-    // {
-
-    // }
+    else if (rect->c == 'r')
+    {
+        i = 0;
+        while (i < paper->height)
+        {
+            j = 0;
+            while (j < paper->width)
+            {
+                if (creat_rect((float)j, (float)i, rect) == 2)
+                    (*draw)[i * paper->width + j] = rect->cc;
+                ++j;
+            }
+            ++i;
+        }
+    }
 }
 
 static int  check_rect(FILE *file, t_bg *paper, char **draw)
@@ -117,6 +130,7 @@ int main(int ac, char **av)
     t_bg    paper;
     char    *draw;
 
+    memset(&paper, 0, sizeof(t_bg));
     if (ac != 2)
         return(msg_error("Error: argument" ,1));
     if (!(file = fopen(av[1], "r")))
