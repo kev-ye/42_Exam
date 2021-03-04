@@ -43,6 +43,33 @@ static int  check_zone(FILE *file, t_bg *paper, char **draw)
     return (1);
 }
 
+// static int  check_rect()
+// {
+// }
+
+static int  check_rect(FILE *file, t_bg *paper, char **draw)
+{
+    t_draw  rect;
+    int     get;
+
+    get = 0;
+    while ((get = fscanf(file, "%c %f %f %f %f %c", &rect.c, &rect.x, &rect.y, &rect.width, &rect.height, &rect.cc)) == 6)
+    {
+        printf("ici\n");
+        if (!(rect.width > 0. && rect.height > 0. && (rect.c == 'r' || rect.c == 'R')))
+        {
+            printf("wtf\n");
+            return (0);
+        }
+    }
+    if (get != -1)
+    {
+        printf("get\n");
+        return (0);
+    }
+    return (1);
+}
+
 static void paint_all(char *draw, t_bg paper)
 {
     int i;
@@ -75,6 +102,11 @@ int main(int ac, char **av)
     {
         fclose(file);
         return(msg_error("Error: Operation file corrupted zone" ,1));
+    }
+    if (!(check_rect(file, &paper, &draw)))
+    {
+        fclose(file);
+        return(msg_error("Error: Operation file corrupted rect" ,1));
     }
     paint_all(draw, paper);
     fclose(file);
