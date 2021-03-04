@@ -138,12 +138,12 @@ int main(int ac, char **av)
     if (!(check_zone(file, &paper, &draw)))
     {
         fclose(file);
-        return(msg_error("Error: Operation file corrupted zone" ,1));
+        return(msg_error("Error: Operation file corrupted" ,1));
     }
     if (!(check_rect(file, &paper, &draw)))
     {
         fclose(file);
-        return(msg_error("Error: Operation file corrupted rect" ,1));
+        return(msg_error("Error: Operation file corrupted" ,1));
     }
     paint_all(draw, paper);
     fclose(file);
