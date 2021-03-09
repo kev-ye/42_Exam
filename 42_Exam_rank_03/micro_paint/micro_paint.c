@@ -47,7 +47,7 @@ static int  creat_rect(float x, float y, t_draw *rect)
 {
     if (x < rect->x || y < rect->y || x > rect->x + rect->width || y > rect->y + rect->height)
         return (0);
-    if ((x - rect->x < 1. || y - rect->y < 1.) || (1. > rect->x + rect->width - x || 1. > rect->y + rect->height - y))
+    if (x - rect->x < 1. || y - rect->y < 1. || (rect->x + rect->width) - x < 1. || (rect->y + rect->height) - y < 1.)
         return (2);
     return (1);
 }
