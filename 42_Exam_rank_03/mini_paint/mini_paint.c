@@ -14,8 +14,7 @@ typedef struct  s_draw
     char    type;
     float   x;
     float   y; 
-    float   width;
-    float   height;
+    float   radius;
     char    c;
 }               t_draw;
 
@@ -43,21 +42,17 @@ static int  check_zone(FILE *file, t_bg *paper, char **draw)
     return (1);
 }
 
-static int  creat_rect(float x, float y, t_draw *rect)
+static int  creat_cicle(float x, float y, t_draw *cicle)
 {
-    if (x < rect->x || y < rect->y || x > rect->x + rect->width || y > rect->y + rect->height)
-        return (0);
-    if (x - rect->x < 1. || y - rect->y < 1. || (rect->x + rect->width) - x < 1. || (rect->y + rect->height) - y < 1.)
-        return (2);
-    return (1);
+    // coming soon ...
 }
 
-static void  draw_rect(t_bg *paper, char **draw, t_draw *rect)
+static void  draw_cicle(t_bg *paper, char **draw, t_draw *cicle)
 {
     int i;
     int j;
 
-    if (rect->type == 'R')
+    if (cicle->type == 'R')
     {
         i = 0;
         while (i < paper->height)
@@ -65,14 +60,14 @@ static void  draw_rect(t_bg *paper, char **draw, t_draw *rect)
             j = 0;
             while (j < paper->width)
             {
-                if (creat_rect((float)j, (float)i, rect))
-                    (*draw)[i * paper->width + j] = rect->c;
+                if (creat_cicle((float)j, (float)i, cicle))
+                    (*draw)[i * paper->width + j] = cicle->c;
                 ++j;
             }
             ++i;
         }
     }
-    else if (rect->type == 'r')
+    else if (cicle->type == 'r')
     {
         i = 0;
         while (i < paper->height)
@@ -80,8 +75,8 @@ static void  draw_rect(t_bg *paper, char **draw, t_draw *rect)
             j = 0;
             while (j < paper->width)
             {
-                if (creat_rect((float)j, (float)i, rect) == 2)
-                    (*draw)[i * paper->width + j] = rect->c;
+                if (creat_cicle((float)j, (float)i, cicle) == 2)
+                    (*draw)[i * paper->width + j] = cicle->c;
                 ++j;
             }
             ++i;
@@ -89,17 +84,17 @@ static void  draw_rect(t_bg *paper, char **draw, t_draw *rect)
     }
 }
 
-static int  check_rect(FILE *file, t_bg *paper, char **draw)
+static int  check_cicle(FILE *file, t_bg *paper, char **draw)
 {
-    t_draw  rect;
+    t_draw  cicle;
     int     get;
 
     get = 0;
-    while ((get = fscanf(file, "%c %f %f %f %f %c\n", &rect.type, &rect.x, &rect.y, &rect.width, &rect.height, &rect.c)) == 6)
+    while ((get = fscanf(file, "%c %f %f %f %c\n", &cicle.type, &cicle.x, &cicle.y, &cicle.radius, &cicle.c)) == 6)
     {
-        if (!(rect.width > 0. && rect.height > 0. && (rect.type == 'r' || rect.type == 'R')))
+        if (!(cicle.radius > 0. && (cicle.type == 'r' || cicle.type == 'R')))
             return (0);
-        draw_rect(paper, draw, &rect);
+        draw_cicle(paper, draw, &cicle);
     }
     if (get != -1)
         return (0);
@@ -140,7 +135,7 @@ int main(int ac, char **av)
         fclose(file);
         return(msg_error("Error: Operation file corrupted" ,1));
     }
-    if (!(check_rect(file, &paper, &draw)))
+    if (!(check_cicle(file, &paper, &draw)))
     {
         fclose(file);
         return(msg_error("Error: Operation file corrupted" ,1));
