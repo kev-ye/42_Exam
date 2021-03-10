@@ -6,13 +6,13 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/21 00:08:56 by kaye              #+#    #+#             */
-/*   Updated: 2021/01/21 00:08:57 by kaye             ###   ########.fr       */
+/*   Updated: 2021/03/10 17:13:43 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static size_t _strlen(char *s)
+static size_t ft_strlen(char *s)
 {
 	int i;
 
@@ -24,7 +24,7 @@ static size_t _strlen(char *s)
 	return (i);
 }
 
-static char *_join(char *s1, char *s2)
+static char *ft_join(char *s1, char *s2)
 {
 	size_t len;
 	char *s;
@@ -32,7 +32,7 @@ static char *_join(char *s1, char *s2)
 
 	if (!s1 && !s2)
 		return (NULL);
-	len = ((s1)? _strlen(s1) : 0) + ((s2)? _strlen(s2) : 0);
+	len = ((s1)? ft_strlen(s1) : 0) + ((s2)? ft_strlen(s2) : 0);
 	s = malloc(sizeof(char) * (len + 1));
 	if (!s)
 		return (NULL);
@@ -48,7 +48,7 @@ static char *_join(char *s1, char *s2)
 	return (s - len);
 }
 
-static int _newline(char *s)
+static int ft_newline(char *s)
 {
 	int i = 0;
 
@@ -63,7 +63,7 @@ static int _newline(char *s)
 	return (0);
 }
 
-static char *_getline(char *s)
+static char *ft_getline(char *s)
 {
 	char *str;
 	int i;
@@ -86,7 +86,7 @@ static char *_getline(char *s)
 	return (str);
 }
 
-static char *_nextline(char *s)
+static char *ft_nextline(char *s)
 {
 	char *str;
 	int i = 0;
@@ -101,7 +101,7 @@ static char *_nextline(char *s)
 		free(s);
 		return (NULL);
 	}
-	str = malloc(sizeof(char) * (_strlen(s) - i + 1));
+	str = malloc(sizeof(char) * (ft_strlen(s) - i + 1));
 	if (!str)
 		return (NULL);
 	i++;
@@ -124,15 +124,15 @@ int				get_next_line(char **line)
 
 	if (!line)
 		return (-1);
-	while (!_newline(s) && ret != 0)
+	while (!ft_newline(s) && ret != 0)
 	{
 		ret = read(0, buff, 1024);
 		if (ret < 0)
 			return (-1);
 		buff[ret] = '\0';
-		s = _join(s, buff);
+		s = ft_join(s, buff);
 	}
-	*line = _getline(s);
-	s = _nextline(s);
+	*line = ft_getline(s);
+	s = ft_nextline(s);
 	return ((ret) ? 1 : 0);
 }
