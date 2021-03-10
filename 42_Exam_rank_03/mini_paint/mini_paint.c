@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 typedef struct  s_bg
 {
@@ -44,7 +45,16 @@ static int  check_zone(FILE *file, t_bg *paper, char **draw)
 
 static int  creat_cicle(float x, float y, t_draw *cicle)
 {
-    // coming soon ...
+    float dist;
+
+    dist = sqrtf(powf(x - cicle->x, 2.) + powf(y - cicle->y, 2.));
+    if (dist <= cicle->radius)
+    {
+        if (cicle->radius - dist < 1.)
+            return (2);
+        return (1);
+    }
+    return (0);
 }
 
 static void  draw_cicle(t_bg *paper, char **draw, t_draw *cicle)
@@ -52,7 +62,7 @@ static void  draw_cicle(t_bg *paper, char **draw, t_draw *cicle)
     int i;
     int j;
 
-    if (cicle->type == 'R')
+    if (cicle->type == 'C')
     {
         i = 0;
         while (i < paper->height)
@@ -67,7 +77,7 @@ static void  draw_cicle(t_bg *paper, char **draw, t_draw *cicle)
             ++i;
         }
     }
-    else if (cicle->type == 'r')
+    else if (cicle->type == 'c')
     {
         i = 0;
         while (i < paper->height)
@@ -90,9 +100,9 @@ static int  check_cicle(FILE *file, t_bg *paper, char **draw)
     int     get;
 
     get = 0;
-    while ((get = fscanf(file, "%c %f %f %f %c\n", &cicle.type, &cicle.x, &cicle.y, &cicle.radius, &cicle.c)) == 6)
+    while ((get = fscanf(file, "%c %f %f %f %c\n", &cicle.type, &cicle.x, &cicle.y, &cicle.radius, &cicle.c)) == 5)
     {
-        if (!(cicle.radius > 0. && (cicle.type == 'r' || cicle.type == 'R')))
+        if (!(cicle.radius > 0. && (cicle.type == 'c' || cicle.type == 'C')))
             return (0);
         draw_cicle(paper, draw, &cicle);
     }
