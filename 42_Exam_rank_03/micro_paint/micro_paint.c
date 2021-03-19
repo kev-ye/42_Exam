@@ -32,7 +32,7 @@ static int  check_zone(FILE *file, t_bg *paper, char **draw)
     get = 0;
     if ((get = fscanf(file, "%d %d %c\n", &paper->width, &paper->height, &paper->c)) != 3)
         return (0);
-    if (!(paper->width > 0 && paper->width <= 300) || !(paper->height > 0 && paper->height <= 300))
+    if (paper->width <= 0 || paper->width > 300 || paper->height <= 0 || paper->height > 300)
         return (0);
     if (get == -1)
         return (0);
@@ -120,8 +120,6 @@ static void paint_all(char *draw, t_bg paper)
         printf("\n");
         ++i;
     }
-    if (draw)
-        free(draw); 
 }
 
 int main(int ac, char **av)
@@ -137,15 +135,21 @@ int main(int ac, char **av)
         return(msg_error("Error: Operation file corrupted" ,1));
     if (!(check_zone(file, &paper, &draw)))
     {
+		if (draw)
+			free(draw);
         fclose(file);
         return(msg_error("Error: Operation file corrupted" ,1));
     }
     if (!(check_rect(file, &paper, &draw)))
     {
+		if (draw)
+			free(draw);
         fclose(file);
         return(msg_error("Error: Operation file corrupted" ,1));
     }
     paint_all(draw, paper);
+	if (draw)
+			free(draw);
     fclose(file);
     return (0);
 }
