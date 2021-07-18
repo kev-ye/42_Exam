@@ -243,8 +243,6 @@ void    _exec(char **av)
             i += microshell.len + 1;
         _free_args();
     }
-    if (fd[0] != -1)
-        close(fd[0]);
 }
 
 int main(int ac, char **av)
