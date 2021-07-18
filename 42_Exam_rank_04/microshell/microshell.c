@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 17:18:05 by kaye              #+#    #+#             */
-/*   Updated: 2021/07/18 17:28:44 by kaye             ###   ########.fr       */
+/*   Updated: 2021/07/18 18:47:35 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,8 +243,8 @@ void    _exec(char **av)
             i += microshell.len + 1;
         _free_args();
     }
+    close(fd[0]);
 }
-
 
 int main(int ac, char **av)
 {
