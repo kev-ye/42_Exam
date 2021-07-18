@@ -1,4 +1,4 @@
-git@vogsphere-v2.42.fr:vogsphere/intra-uuid-ddb8b7fe-2800-464f-a1ca-3da390305afb-3616126bAssignment name  : microshell
+Assignment name  : microshell
 Expected files   : *.c *.h
 Allowed functions: malloc, free, write, close, fork, waitpid, signal, kill, exit, chdir, execve, dup, dup2, pipe, strcmp, strncmp
 --------------------------------------------------------------------------------------
