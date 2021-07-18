@@ -68,13 +68,13 @@ size_t    _strlen(char *s)
 
 char    *_strdup(char *s)
 {
-    char *new_s;
-    int i;
+    char    *new_s;
+    size_t  i;
 
     if (!s)
         return (NULL);
     i = _strlen(s);
-    new_s = _calloc(i, sizeof(char));
+    new_s = _calloc(i + 1, sizeof(char));
     if (!new_s)
         return (NULL);
     i = 0;
@@ -172,7 +172,7 @@ void    _parser(char **av, int i)
     microshell.len = len;
     j = i;
     k = 0;
-    while (av[j] && k < len)
+    while (av[j] && (size_t)k < len)
     {
         microshell.args[k] = _strdup(av[j]);
         ++k;
@@ -195,6 +195,7 @@ void    _fork_exec(void)
         {
             if (execve(microshell.args[0], microshell.args, environ) == -1)
                 __exit__(E_EXEC, microshell.args[0], STDERR_FILENO, FAILURE);
+            __exit__(NULL, NULL, -1, SUCCESS);
         }
         else
             waitpid(pid, NULL, 0);
@@ -227,7 +228,6 @@ void    _fork_exec_pipe(void)
 void    _exec(char **av)
 {
     size_t  i;
-    int     j;
 
     i = 1;
     while (av[i])
@@ -243,7 +243,8 @@ void    _exec(char **av)
             i += microshell.len + 1;
         _free_args();
     }
-    close(fd[0]);
+    if (fd[0] != -1)
+        close(fd[0]);
 }
 
 int main(int ac, char **av)
