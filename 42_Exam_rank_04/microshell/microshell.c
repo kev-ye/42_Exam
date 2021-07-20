@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 17:18:05 by kaye              #+#    #+#             */
-/*   Updated: 2021/07/20 12:47:41 by kaye             ###   ########.fr       */
+/*   Updated: 2021/07/20 13:04:22 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,15 +169,15 @@ void    _parser(char **av, int i)
     k = 0;
     while (av[j] && (size_t)k < microshell.len)
     {
-        if (microshell.args[0] && _strlen(microshell.args[0]) == 1 && (microshell.args[0][0] == ';' || microshell.args[0][0] == '|'))
-            break ;
         microshell.args[k] = _strdup(av[j]);
+        if (av[j] && _strlen(av[j]) == 1 && (av[j][0] == ';' || av[j][0] == '|'))
+            break ;
         ++k;
         ++j;
     }
-    if (av[k] && av[k][0] == '|' && _strlen(av[k]) == 1)
+    if (av[j] && av[j][0] == '|' && _strlen(av[j]) == 1)
         microshell.flag = PIPE;
-    else if (av[k] && av[k][0] == ';' && _strlen(av[k]) == 1)
+    else if (av[j] && av[j][0] == ';' && _strlen(av[j]) == 1)
         microshell.flag = MULTI;
     else
         microshell.flag = NO_FLAG;
@@ -222,6 +222,7 @@ void    _fork_exec(void)
 
 void    _exec(char **av, char **env)
 {
+    (void)env;
     size_t  i;
 
     i = 1;
