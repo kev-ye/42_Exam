@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 17:18:05 by kaye              #+#    #+#             */
-/*   Updated: 2021/07/18 18:47:35 by kaye             ###   ########.fr       */
+/*   Updated: 2021/07/20 12:46:55 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,11 @@
 typedef struct s_microshell
 {
     char    **args;
+    char    **env;
     size_t  len;
     int     flag;
 }   t_microshell;
 
-extern char     **environ;
 t_microshell    microshell;
 int             fd[2];
 
@@ -74,7 +74,7 @@ char    *_strdup(char *s)
     if (!s)
         return (NULL);
     i = _strlen(s);
-    new_s = _calloc(i, sizeof(char));
+    new_s = _calloc(i + 1, sizeof(char));
     if (!new_s)
         return (NULL);
     i = 0;
@@ -83,7 +83,6 @@ char    *_strdup(char *s)
         new_s[i] = s[i];
         ++i;
     }
-    new_s[i] = '\0';
     return (new_s);
 }
 
@@ -95,7 +94,11 @@ size_t    _agrs_len(char **s)
     while (s && s[i] != NULL)
     {
         if ((s[i][0] == '|' || s[i][0] == ';') && _strlen(s[i]) == 1)
+        {
+            if (i == 0)
+                i = 1;
             break ;
+        }
         ++i;
     }
     return (i);
@@ -154,104 +157,94 @@ void    _cd(void)
 
 void    _parser(char **av, int i)
 {
-    int             j;
-    int             k;
-    size_t          len;
+    int  j;
+    int  k;
 
     _b_zero(&microshell, sizeof(t_microshell));
-    len = _agrs_len(av + i);
-    microshell.args = _calloc(len + 1, sizeof(char *));
+    microshell.len = _agrs_len(av + i);
+    microshell.args = _calloc(microshell.len + 1, sizeof(char *));
     if (!microshell.args)
         __exit__(E_FATAL, NULL, STDERR_FILENO, FAILURE);
-    if (av[len + i] && av[len + i][0] == '|' && _strlen(av[len + i]) == 1)
-        microshell.flag = PIPE;
-    else if (av[len + i] && av[len + i][0] == ';' && _strlen(av[len + i]) == 1)
-        microshell.flag = MULTI;
-    else
-        microshell.flag = NO_FLAG;
-    microshell.len = len;
     j = i;
     k = 0;
-    while (av[j] && k < len)
+    while (av[j] && (size_t)k < microshell.len)
     {
+        if (microshell.args[0] && _strlen(microshell.args[0]) == 1 && (microshell.args[0][0] == ';' || microshell.args[0][0] == '|'))
+            break ;
         microshell.args[k] = _strdup(av[j]);
         ++k;
         ++j;
     }
+    if (av[k] && av[k][0] == '|' && _strlen(av[k]) == 1)
+        microshell.flag = PIPE;
+    else if (av[k] && av[k][0] == ';' && _strlen(av[k]) == 1)
+        microshell.flag = MULTI;
+    else
+        microshell.flag = NO_FLAG;
 }
 
 void    _fork_exec(void)
 {
     pid_t pid;
 
-    if (!strcmp(microshell.args[0], "cd"))
+    if (microshell.args[0] && !strcmp(microshell.args[0], "cd"))
         _cd();
     else
     {
+        if (microshell.flag == PIPE)
+            pipe(fd);
         pid = fork();
         if (pid < 0)
             __exit__(E_FATAL, NULL, STDERR_FILENO, FAILURE);
         else if (pid == 0)
         {
-            if (execve(microshell.args[0], microshell.args, environ) == -1)
+            if (microshell.flag == PIPE)
+            {
+                close(fd[0]);
+                dup2(fd[1], STDOUT_FILENO);
+            }
+            if (execve(microshell.args[0], microshell.args, microshell.env) == -1)
                 __exit__(E_EXEC, microshell.args[0], STDERR_FILENO, FAILURE);
         }
         else
+        {
+            if (microshell.flag == PIPE)
+            {
+                close(fd[1]);
+                dup2(fd[0], STDIN_FILENO);
+            }
             waitpid(pid, NULL, 0);
+        }
+        if (fd[0] != -1)
+            close(fd[0]);
     }
 }
 
-void    _fork_exec_pipe(void)
-{
-    pid_t pid;
-
-    pipe(fd);
-    pid = fork();
-    if (pid < 0)
-        __exit__(E_FATAL, NULL, STDERR_FILENO, FAILURE);
-    else if (pid == 0)
-    {
-        close(fd[0]);
-        dup2(fd[1], STDOUT_FILENO);
-        if (execve(microshell.args[0], microshell.args, environ) == -1)
-            __exit__(E_EXEC, microshell.args[0], STDERR_FILENO, FAILURE);
-    }
-    else
-    {
-        close(fd[1]);
-        dup2(fd[0], STDIN_FILENO);
-        waitpid(pid, NULL, 0);
-    }
-}
-
-void    _exec(char **av)
+void    _exec(char **av, char **env)
 {
     size_t  i;
-    int     j;
 
     i = 1;
     while (av[i])
     {
         _parser(av, i);
-        if (microshell.flag == NO_FLAG || microshell.flag == MULTI)
+        microshell.env = env;
+        if (!(microshell.args[0] && _strlen(microshell.args[0]) == 1 && microshell.args[0][0] == ';'))
             _fork_exec();
-        else if (microshell.flag == PIPE)
-            _fork_exec_pipe();
-        if (microshell.flag == NO_FLAG)
+        if (microshell.flag == NO_FLAG || microshell.flag == MULTI)
             i += microshell.len;
         else
             i += microshell.len + 1;
         _free_args();
     }
-    close(fd[0]);
 }
 
-int main(int ac, char **av)
+int main(int ac, char **av, char **env)
 {
     if (ac <= 1)
         return (0);
     fd[0] = -1;
     fd[1] = -1;
-    _exec(av);
+    _exec(av, env);
     return (0);
 }

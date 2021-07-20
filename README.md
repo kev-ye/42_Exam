@@ -29,6 +29,6 @@
 
 ## 42_Exam_ranl_04
 
-	comming soon ...
+	✅ microshell has passed the exam.
 
 [__microshell__](./42_Exam_rank_04/microshell/microshell.c)  
