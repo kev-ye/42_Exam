@@ -6,11 +6,11 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/13 17:18:29 by kaye              #+#    #+#             */
-/*   Updated: 2021/07/13 17:18:30 by kaye             ###   ########.fr       */
+/*   Updated: 2021/08/13 14:37:57 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MICRO_PATNT.H
-# define MICRO_PATNT.H
+#ifndef MICRO_PATNT_H
+# define MICRO_PATNT_H
 
 #endif
