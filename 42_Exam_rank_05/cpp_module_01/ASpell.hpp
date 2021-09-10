@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 15:54:47 by kaye              #+#    #+#             */
-/*   Updated: 2021/09/09 19:58:40 by kaye             ###   ########.fr       */
+/*   Updated: 2021/09/10 18:04:04 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,16 @@ class ATarget;
 class ASpell {
 	public:
 		ASpell(void);
-		ASpell(std::string const & name, std::string const & effects);
-		ASpell(ASpell const & src);
+		ASpell(std::string const &, std::string const &);
+		ASpell(ASpell const &);
 		virtual ~ASpell(void);
 
-		ASpell & operator=(ASpell const & rhs);
+		ASpell & operator=(ASpell const &);
 
 	public:
 		std::string const & getName(void) const;
 		std::string const & getEffects(void) const;
-		void launch(ATarget const & target);
+		void launch(ATarget const &);
 
 		virtual ASpell *clone(void) const = 0;
 

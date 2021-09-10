@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 14:27:52 by kaye              #+#    #+#             */
-/*   Updated: 2021/09/09 20:01:56 by kaye             ###   ########.fr       */
+/*   Updated: 2021/09/10 18:04:36 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,23 +21,23 @@
 
 class Warlock {
 	public:
-		Warlock(std::string const & name, std::string const & title);
+		Warlock(std::string const &, std::string const &);
 		virtual ~Warlock(void);
 
 	private:
 		Warlock(void);
-		Warlock(Warlock const & src);
-		Warlock & operator=(Warlock const & rhs);
+		Warlock(Warlock const &);
+		Warlock & operator=(Warlock const &);
 
 	public:
-		void				setTitle(std::string const & title);
+		void				setTitle(std::string const &);
 		std::string const &	getName(void) const;
 		std::string const &	getTitle(void) const;
 		void				introduce(void) const;
 
-		void	learnSpell(ASpell * spell);
-		void	forgetSpell(std::string const & spellName);
-		void	launchSpell(std::string const & spellName, ATarget & target);
+		void	learnSpell(ASpell *);
+		void	forgetSpell(std::string const &);
+		void	launchSpell(std::string const &, ATarget &);
 
 	private:
 		std::string _name;

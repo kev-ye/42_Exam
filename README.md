@@ -35,9 +35,11 @@
 
 [__microshell__](./42_Exam_rank_04/microshell/microshell.c)  
 
-## 42_Exam_ranl_04
+## 42_Exam_ranl_05
 
-	coming soon ...
+	✅ cpp_module_00 has passed the exam.
+	✅ cpp_module_01 has passed the exam.
+	✅ cpp_module_02 has passed the exam.
 
 [__cpp_module_00__](./42_Exam_rank_05/cpp_module_00)  
 [__cpp_module_01__](./42_Exam_rank_05/cpp_module_01)  

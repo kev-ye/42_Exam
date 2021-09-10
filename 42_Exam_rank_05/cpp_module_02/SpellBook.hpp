@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 18:14:15 by kaye              #+#    #+#             */
-/*   Updated: 2021/09/09 20:25:22 by kaye             ###   ########.fr       */
+/*   Updated: 2021/09/10 18:05:14 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,13 @@ class SpellBook {
 		virtual ~SpellBook(void);
 
 	private:
-		SpellBook(SpellBook const & src);
-		SpellBook & operator=(SpellBook const & rhs);
+		SpellBook(SpellBook const &);
+		SpellBook & operator=(SpellBook const &);
 
 	public:
-		void	learnSpell(ASpell *spell);
-		void	forgetSpell(std::string const & spellName);
-		ASpell*	createSpell(std::string const & spellName);
+		void	learnSpell(ASpell *);
+		void	forgetSpell(std::string const &);
+		ASpell*	createSpell(std::string const &);
 
 	private:
 		std::vector<ASpell*> _spell;

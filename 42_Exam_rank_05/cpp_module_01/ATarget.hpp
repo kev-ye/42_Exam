@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/09 16:23:33 by kaye              #+#    #+#             */
-/*   Updated: 2021/09/09 19:58:45 by kaye             ###   ########.fr       */
+/*   Updated: 2021/09/10 18:04:14 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,15 @@ class ASpell;
 class ATarget {
 	public:
 		ATarget(void);
-		ATarget(std::string const & type);
-		ATarget(ATarget const & src);
+		ATarget(std::string const &);
+		ATarget(ATarget const &);
 		virtual ~ATarget(void);
 
-		ATarget & operator=(ATarget const & rhs);
+		ATarget & operator=(ATarget const &);
 
 	public:
 		std::string const & getType(void) const;
-		void getHitBySpell(ASpell const & spell) const;
+		void getHitBySpell(ASpell const &) const;
 	
 		virtual ATarget *clone(void) const = 0;
 
