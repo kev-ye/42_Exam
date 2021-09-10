@@ -24,7 +24,7 @@
 
 	✅ micro_paint has passed the exam.
 	✅ mini_paint has passed the exam.
-	i used ft_putchar and ft_putstr instead of printf during exam.
+	ℹ️ i used ft_putchar and ft_putstr instead of printf during exam.
 
 [__micro_paint__](./42_Exam_rank_03/micro_paint/micro_paint.c)  
 [__mini_paint__](./42_Exam_rank_03/mini_paint/mini_paint.c)
