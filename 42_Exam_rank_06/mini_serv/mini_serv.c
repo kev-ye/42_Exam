@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/28 12:46:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/11/28 20:57:38 by kaye             ###   ########.fr       */
+/*   Updated: 2021/11/28 21:09:22 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -289,18 +289,7 @@ void	__createServ__(u_int16_t const port) {
 		__exit__();
 }
 
-/** @brief main */
-
-int	main(int ac, char **av) {
-	char const	*msg = "Wrong number of arguments\n";
-
-	if (ac != 2) {
-		write(STDERR_FILENO, msg, strlen(msg));
-		exit(EXIT_FAILURE);
-	}
-	u_int16_t port = atoi(av[1]);
-	__createServ__(port);
-
+void	__startServ__(void) {
 	FD_ZERO(&fdSet);
 	FD_SET(sockFd, &fdSet);
 
@@ -332,5 +321,19 @@ int	main(int ac, char **av) {
 			}
 		}
 	}
+}
+
+/** @brief main */
+
+int	main(int ac, char **av) {
+	char const	*msg = "Wrong number of arguments\n";
+
+	if (ac != 2) {
+		write(STDERR_FILENO, msg, strlen(msg));
+		exit(EXIT_FAILURE);
+	}
+	u_int16_t port = atoi(av[1]);
+	__createServ__(port);
+	__startServ__();
 	return 0;
 }
