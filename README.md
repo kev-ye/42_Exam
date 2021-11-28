@@ -7,6 +7,7 @@
 * [42_Exam_ranl_03](#42_Exam_ranl_03)
 * [42_Exam_ranl_04](#42_Exam_ranl_04)
 * [42_Exam_ranl_05](#42_Exam_ranl_05)
+* [42_Exam_ranl_05](#42_Exam_ranl_06)
 
 ## Presentation
 
@@ -33,7 +34,7 @@
 
 	✅ microshell has passed the exam.
 
-[__microshell__](./42_Exam_rank_04/microshell/microshell.c)  
+[__microshell__](./42_Exam_rank_04/microshell/microshell.c)
 
 ## 42_Exam_ranl_05
 
@@ -44,3 +45,9 @@
 [__cpp_module_00__](./42_Exam_rank_05/cpp_module_00)  
 [__cpp_module_01__](./42_Exam_rank_05/cpp_module_01)  
 [__cpp_module_02__](./42_Exam_rank_05/cpp_module_02)  
+
+## 42_Exam_ranl_06
+
+	coming soon ...
+
+[__mini_serv__](./42_Exam_rank_06/mini_serv/mini_serv.c)
