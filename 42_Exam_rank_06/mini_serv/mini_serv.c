@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/28 12:46:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/11/28 19:56:19 by kaye             ###   ########.fr       */
+/*   Updated: 2021/11/28 20:57:38 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,10 @@ int			last_id = 0;
 fd_set		fdSet;
 fd_set		tmpSet;
 char		msgRecv[1024 + 1] = {0};
+char		*msgToSend = NULL;
 
 /** @brief funcion */
+
 
 int	__intLen__(int i) {
 	int len = 0;
@@ -71,7 +73,58 @@ void	__exit__(void) {
 		FD_CLR(sockFd, &fdSet);
 	}
 	__clean__();
+	if (NULL != msgToSend) {
+		free(msgToSend);
+		msgToSend = NULL;
+	}
 	exit(EXIT_FAILURE);
+}
+
+char *__join__(char *buf, char *add) // subjects/main.c function
+{
+	char	*newbuf;
+	int		len;
+
+	if (NULL == buf)
+		len = 0;
+	else
+		len = strlen(buf);
+	newbuf = calloc((len + strlen(add) + 1), sizeof(*newbuf));
+	if (NULL == newbuf)
+		__exit__();
+	newbuf[0] = '\0';
+	if (buf != NULL)
+		strcat(newbuf, buf);
+	free(buf);
+	strcat(newbuf, add);
+	return (newbuf);
+}
+
+int __extract__(char **buf, char **msg) // subjects/main.c function
+{
+	char	*newbuf;
+	int		i;
+
+	*msg = 0;
+	if (*buf == 0)
+		return (0);
+	i = 0;
+	while ((*buf)[i])
+	{
+		if ((*buf)[i] == '\n')
+		{
+			newbuf = calloc(1, sizeof(*newbuf) * (strlen(*buf + i + 1) + 1));
+			if (newbuf == 0)
+				__exit__();
+			strcpy(newbuf, *buf + i + 1);
+			*msg = *buf;
+			(*msg)[i + 1] = 0;
+			*buf = newbuf;
+			return (1);
+		}
+		i++;
+	}
+	return (0);
 }
 
 int		__getCliId__(int const fd) {
@@ -116,7 +169,6 @@ void	__deleteCli__(int fd) {
 		tmp = tmp->next;
 	toDelete = tmp->next;
 	id = toDelete->id;
-	printf("toDelelte: %d\n", id);
 	tmp->next = tmp->next->next;
 	free(toDelete);
 	toDelete = NULL;
@@ -185,24 +237,26 @@ void	__disconnection__(int const fd) {
 }
 
 void	__sendMsg__(int const fd) {
-	char	tmp[1024 + 1] = {0};
+	char	*readyToSend = NULL;
 	char	*toSend = NULL;
-	int		i = 0;
-	int		j = 0;
+	int		canSend = 0;
 
-	while ('\0' != msgRecv[i]) {
-		tmp[j++] = msgRecv[i];
-		if ('\n' == msgRecv[i++]) {
-			toSend = calloc(__intLen__(fd) + sizeof("client  : ") + strlen(tmp), sizeof(char));
-			if (NULL == toSend)
-				__exit__();
-			sprintf(toSend, "client %d: %s", __getCliId__(fd), tmp);
-			__sendToAll__(fd, toSend);
-			bzero(tmp, strlen(tmp));
-			j = 0;
+	msgToSend = __join__(msgToSend, msgRecv);
+	canSend = __extract__(&msgToSend, &readyToSend);
+	if (1 == canSend) {
+		toSend = calloc(__intLen__(fd) + sizeof("client  : ") + strlen(readyToSend), sizeof(char));
+		if (NULL == toSend) {
+			if (NULL != readyToSend) {
+				free(readyToSend);
+				readyToSend = NULL;
+			}
+			__exit__();
 		}
+		sprintf(toSend, "client %d: %s", __getCliId__(fd), readyToSend);
+		free(readyToSend);
+		readyToSend = NULL;
+		__sendToAll__(fd, toSend);
 	}
-	bzero(msgRecv, strlen(msgRecv));
 }
 
 int		__maxFd__(void) {
@@ -253,8 +307,11 @@ int	main(int ac, char **av) {
 	for (;;) {
 		tmpSet = fdSet;
 		int ready = select(__maxFd__() + 1, &tmpSet, NULL, NULL, NULL);
-		if (read < 0)
+		if (ready < 0)
 			continue ;
+
+		if (ready == 0)
+			break ;
 
 		for (int i = 0; i < __maxFd__() + 1; i++) {
 			if (FD_ISSET(i, &tmpSet)) {
@@ -264,19 +321,16 @@ int	main(int ac, char **av) {
 				}
 				else {
 					bzero(msgRecv, sizeof(msgRecv));
-					int	ret = recv(i, msgRecv, 1024, 0);
+					int	ret = recv(i, msgRecv, 2, 0);
 					if (ret <= 0) {
 						__disconnection__(i);
 						break ;
 					}
-					else {
-						printf("msg: %s\n", msgRecv);
+					else
 						__sendMsg__(i);
-					}
 				}
 			}
 		}
 	}
-
 	return 0;
 }
