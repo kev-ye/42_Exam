@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/28 12:46:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/11/28 21:09:22 by kaye             ###   ########.fr       */
+/*   Updated: 2021/12/02 20:29:51 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ t_client	*g_client = NULL;
 int			sockFd = -1;
 int			last_id = 0;
 fd_set		fdSet;
-fd_set		tmpSet;
+fd_set		readSet;
+fd_set		writeSet;
 char		msgRecv[1024 + 1] = {0};
 char		*msgToSend = NULL;
 
@@ -242,8 +243,7 @@ void	__sendMsg__(int const fd) {
 	int		canSend = 0;
 
 	msgToSend = __join__(msgToSend, msgRecv);
-	canSend = __extract__(&msgToSend, &readyToSend);
-	if (1 == canSend) {
+	while ((canSend = __extract__(&msgToSend, &readyToSend)) == 1) {
 		toSend = calloc(__intLen__(fd) + sizeof("client  : ") + strlen(readyToSend), sizeof(char));
 		if (NULL == toSend) {
 			if (NULL != readyToSend) {
@@ -294,23 +294,20 @@ void	__startServ__(void) {
 	FD_SET(sockFd, &fdSet);
 
 	for (;;) {
-		tmpSet = fdSet;
-		int ready = select(__maxFd__() + 1, &tmpSet, NULL, NULL, NULL);
+		writeSet = readSet = fdSet;
+		int ready = select(__maxFd__() + 1, &readSet, &writeSet, NULL, NULL);
 		if (ready < 0)
 			continue ;
 
-		if (ready == 0)
-			break ;
-
-		for (int i = 0; i < __maxFd__() + 1; i++) {
-			if (FD_ISSET(i, &tmpSet)) {
+		for (int i = 0; i <= __maxFd__(); i++) {
+			if (FD_ISSET(i, &readSet)) {
 				if (i == sockFd) {
 					__connection__();
 					break ;
 				}
 				else {
 					bzero(msgRecv, sizeof(msgRecv));
-					int	ret = recv(i, msgRecv, 2, 0);
+					int	ret = recv(i, msgRecv, 1024, 0);
 					if (ret <= 0) {
 						__disconnection__(i);
 						break ;
