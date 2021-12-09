@@ -48,6 +48,6 @@
 
 ## 42_Exam_ranl_06
 
-	coming soon ...
+	✅ mini_serv has passed the exam.
 
 [__mini_serv__](./42_Exam_rank_06/mini_serv/mini_serv.c)

@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/28 12:46:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/12/02 20:29:51 by kaye             ###   ########.fr       */
+/*   Updated: 2021/12/09 17:59:50 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,7 @@ fd_set		writeSet;
 char		msgRecv[1024 + 1] = {0};
 char		*msgToSend = NULL;
 
-/** @brief funcion */
-
+/** @brief utils funcion */
 
 int	__intLen__(int i) {
 	int len = 0;
@@ -59,10 +58,15 @@ void	__clean__(void) {
 	while (NULL != tmp) {
 		toFree = tmp;
 		tmp = tmp->next;
-		close(toFree->fd);
+		if (toFree->fd != -1) {
+			close(toFree->fd);
+			FD_CLR(toFree->fd, &fdSet);
+		}
 		free(toFree);
 		toFree = NULL;
 	}
+	close(sockFd);
+	FD_CLR(sockFd, &fdSet);
 }
 
 void	__exit__(void) {
@@ -128,6 +132,8 @@ int __extract__(char **buf, char **msg) // subjects/main.c function
 	return (0);
 }
 
+/** @brief server funcion */
+
 int		__getCliId__(int const fd) {
 	t_client	*tmp;
 
@@ -162,15 +168,14 @@ void	__deleteCli__(int fd) {
 		toDelete = g_client;
 		id = toDelete->id;
 		g_client = g_client->next;
-		free(toDelete);
-		toDelete = NULL;
-		return ;
 	}
-	while (NULL != tmp && NULL != tmp->next && tmp->next->fd != fd)
-		tmp = tmp->next;
-	toDelete = tmp->next;
-	id = toDelete->id;
-	tmp->next = tmp->next->next;
+	else {
+		while (NULL != tmp && NULL != tmp->next && tmp->next->fd != fd)
+			tmp = tmp->next;
+		toDelete = tmp->next;
+		id = toDelete->id;
+		tmp->next = tmp->next->next;
+	}
 	free(toDelete);
 	toDelete = NULL;
 }
@@ -237,19 +242,16 @@ void	__disconnection__(int const fd) {
 	__deleteCli__(fd);
 }
 
-void	__sendMsg__(int const fd) {
+void	__communication__(int const fd) {
 	char	*readyToSend = NULL;
 	char	*toSend = NULL;
-	int		canSend = 0;
 
 	msgToSend = __join__(msgToSend, msgRecv);
-	while ((canSend = __extract__(&msgToSend, &readyToSend)) == 1) {
+	while (__extract__(&msgToSend, &readyToSend) == 1) {
 		toSend = calloc(__intLen__(fd) + sizeof("client  : ") + strlen(readyToSend), sizeof(char));
 		if (NULL == toSend) {
-			if (NULL != readyToSend) {
-				free(readyToSend);
-				readyToSend = NULL;
-			}
+			free(readyToSend);
+			readyToSend = NULL;
 			__exit__();
 		}
 		sprintf(toSend, "client %d: %s", __getCliId__(fd), readyToSend);
@@ -299,6 +301,8 @@ void	__startServ__(void) {
 		if (ready < 0)
 			continue ;
 
+		printf("t\n");
+
 		for (int i = 0; i <= __maxFd__(); i++) {
 			if (FD_ISSET(i, &readSet)) {
 				if (i == sockFd) {
@@ -313,7 +317,7 @@ void	__startServ__(void) {
 						break ;
 					}
 					else
-						__sendMsg__(i);
+						__communication__(i);
 				}
 			}
 		}
