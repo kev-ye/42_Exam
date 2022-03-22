@@ -6,7 +6,7 @@
 /*   By: kaye <kaye@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/28 12:46:45 by kaye              #+#    #+#             */
-/*   Updated: 2021/12/09 17:59:50 by kaye             ###   ########.fr       */
+/*   Updated: 2022/03/22 13:01:25 by kaye             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,8 +300,6 @@ void	__startServ__(void) {
 		int ready = select(__maxFd__() + 1, &readSet, &writeSet, NULL, NULL);
 		if (ready < 0)
 			continue ;
-
-		printf("t\n");
 
 		for (int i = 0; i <= __maxFd__(); i++) {
 			if (FD_ISSET(i, &readSet)) {
